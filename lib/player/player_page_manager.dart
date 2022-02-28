@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 
-class FCPlayer {
+class PlayerPageManager {
   late AudioPlayer _audioPlayer;
+  final String path;
 
   final progressBarStateValueNotifier = ValueNotifier<ProgressBarState>(
     ProgressBarState(
@@ -15,7 +16,7 @@ class FCPlayer {
 
   final buttonStateValueNotifier = ValueNotifier<ButtonState>(ButtonState.paused);
 
-  FCPlayer() {
+  PlayerPageManager({required this.path}) {
     _init();
   }
 
