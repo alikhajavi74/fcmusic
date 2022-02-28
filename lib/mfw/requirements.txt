@@ -1,0 +1,75 @@
+FaraCodeTeam.IR
+Copyright 2017 - 2022, FaraCodeTeam.IR. All rights reserved.
+
+*** requirement ***
+
+----------------------------------------------------------------------------------------------------
+
+# Packages:
+
+# mfw:
+ansicolor: ^2.0.1
+http: ^0.13.4
+mime: ^1.0.1
+equatable: ^2.0.3
+intl: ^0.17.0
+# image_picker: ^0.8.4+9
+# image_cropper: ^1.5.0
+# persian_datetime_picker: ^2.4.0
+# auto_animated: ^3.0.1
+# flutter_poolakey: ^0.1.0
+# myket_iap: ^1.0.2
+# timezone: ^0.8.0
+# flutter_local_notifications: ^9.2.0
+# shamsi_date: ^1.0.1
+
+----------------------------------------------------------------------------------------------------
+
+# http:
+
+in android/app/src/main/AndroidManifest.xml:
+<uses-permission android:name="android.permission.INTERNET" />
+
+----------------------------------------------------------------------------------------------------
+
+# image_picker:
+
+in ios/Runner/Info.plist:
+<key>NSPhotoLibraryUsageDescription</key>
+<string>This app requires access to the photo library for upload your images</string>
+<key>NSCameraUsageDescription</key>
+<string>This app requires access to the camera for take new images and upload them</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>This app requires access to the microphone for record videos</string>
+<key>CFBundleDevelopmentRegion</key>
+
+----------------------------------------------------------------------------------------------------
+
+# image_cropper:
+
+in android/app/src/main/AndroidManifest.xml:
+<activity
+  android:name="com.yalantis.ucrop.UCropActivity"
+  android:screenOrientation="portrait"
+  android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+----------------------------------------------------------------------------------------------------
+
+# myket_iap:
+
+in android/app/src/main/AndroidManifest.xml:
+<uses-permission android:name="ir.mservices.market.BILLING" />
+
+----------------------------------------------------------------------------------------------------
+
+# flutter_local_notifications:
+
+in android/app/src/main/res/drawable:
+add app_icon.png
+
+in ios/Runner/AppDelegate.swift:
+if #available(iOS 10.0, *) {
+  UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
+}
+
+----------------------------------------------------------------------------------------------------
