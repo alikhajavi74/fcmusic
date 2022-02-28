@@ -3,8 +3,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 
 class FCPlayer {
-  static const url = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3';
-
   late AudioPlayer _audioPlayer;
 
   final progressBarStateValueNotifier = ValueNotifier<ProgressBarState>(
@@ -23,7 +21,6 @@ class FCPlayer {
 
   void _init() async {
     _audioPlayer = AudioPlayer();
-    // await _audioPlayer.setUrl(url);
     await _audioPlayer.setAsset("audio/Roy Jones - Can't be touched-320k.mp3");
 
     _audioPlayer.playerStateStream.listen((playerState) {
@@ -66,6 +63,10 @@ class FCPlayer {
 
   void pause() {
     _audioPlayer.pause();
+  }
+
+  void stop() {
+    _audioPlayer.stop();
   }
 
   void seek(Duration position) {
