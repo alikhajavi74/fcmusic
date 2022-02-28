@@ -1,6 +1,5 @@
-import 'package:fcmusic/back_end.dart';
+import 'package:fcmusic/fc_player.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:just_audio/just_audio.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,19 +34,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late AudioPlayer _player;
-  late PageManager _pageManager;
+  late FCPlayer _pageManager;
 
   @override
   void initState() {
-    _player = AudioPlayer();
-    _pageManager = PageManager();
+    _pageManager = FCPlayer();
     super.initState();
   }
 
   @override
   void dispose() {
-    _player.dispose();
     _pageManager.dispose();
     super.dispose();
   }
@@ -117,7 +113,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
     var slider = ValueListenableBuilder<ProgressBarState>(
-      valueListenable: _pageManager.progressNotifier,
+      valueListenable: _pageManager.progressBarStateValueNotifier,
       builder: (context, value, child) {
         return Column(
           children: [
@@ -147,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 accent: Colors.green,
               ),
-              onChangeEnd: (newValue) {
+              onChanged: (newValue) {
                 _pageManager.seek(Duration(seconds: newValue.toInt()));
               },
             ),
@@ -176,8 +172,8 @@ class _HomePageState extends State<HomePage> {
           },
         ),
         ValueListenableBuilder<ButtonState>(
-          valueListenable: _pageManager.buttonNotifier,
-          builder: (_, value, __) {
+          valueListenable: _pageManager.buttonStateValueNotifier,
+          builder: (context, value, child) {
             switch (value) {
               case ButtonState.loading:
                 return const CircularProgressIndicator();
