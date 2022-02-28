@@ -1,4 +1,5 @@
 import 'package:fcmusic/fc_player.dart';
+import 'package:fcmusic/mfw/dependencies/mfw_utils.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 void main() {
@@ -118,33 +119,29 @@ class _HomePageState extends State<HomePage> {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Row(
                 children: [
                   Text(
-                    "${value.current.inSeconds.toDouble()}",
+                    convertDurationToMinute(value.current),
                     style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                   const Spacer(),
                   Text(
-                    "${value.total.inSeconds.toDouble()}",
+                    convertDurationToMinute(value.total),
                     style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                 ],
               ),
             ),
-            NeumorphicSlider(
-              value: value.current.inSeconds.toDouble(),
-              max: value.total.inSeconds.toDouble(),
-              style: const SliderStyle(
-                depth: -20.0,
-                border: NeumorphicBorder(
-                  color: Colors.black54,
-                ),
-                accent: Colors.green,
-              ),
+            Slider(
+              value: value.current.inMilliseconds.toDouble(),
+              max: value.total.inMilliseconds.toDouble(),
+              activeColor: Colors.deepOrange,
+              thumbColor: Colors.deepOrange,
+              inactiveColor: Colors.white54,
               onChanged: (newValue) {
-                _pageManager.seek(Duration(seconds: newValue.toInt()));
+                _pageManager.seek(Duration(milliseconds: newValue.toInt()));
               },
             ),
           ],
@@ -174,48 +171,44 @@ class _HomePageState extends State<HomePage> {
         ValueListenableBuilder<ButtonState>(
           valueListenable: _pageManager.buttonStateValueNotifier,
           builder: (context, value, child) {
-            switch (value) {
-              case ButtonState.loading:
-                return const CircularProgressIndicator();
-              case ButtonState.paused:
-                return NeumorphicButton(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.all(30.0),
-                  child: const Icon(
-                    Icons.play_arrow,
-                    color: Colors.white54,
-                    size: 30,
-                  ),
-                  style: const NeumorphicStyle(
-                    boxShape: NeumorphicBoxShape.circle(),
-                    shape: NeumorphicShape.convex,
-                    color: Colors.black54,
-                  ),
-                  onPressed: () async {
-                    // TODO
-                    _pageManager.play();
-                  },
-                );
-              case ButtonState.playing:
-                return NeumorphicButton(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.all(30.0),
-                  child: const Icon(
-                    Icons.pause,
-                    color: Colors.white54,
-                    size: 30,
-                  ),
-                  style: NeumorphicStyle(
-                    boxShape: const NeumorphicBoxShape.circle(),
-                    shape: NeumorphicShape.concave,
-                    color: Colors.deepOrange.shade800,
-                  ),
-                  onPressed: () async {
-                    // TODO
-                    _pageManager.pause();
-                  },
-                );
+            if (value == ButtonState.playing) {
+              return NeumorphicButton(
+                margin: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(30.0),
+                child: const Icon(
+                  Icons.pause,
+                  color: Colors.white54,
+                  size: 30,
+                ),
+                style: NeumorphicStyle(
+                  boxShape: const NeumorphicBoxShape.circle(),
+                  shape: NeumorphicShape.concave,
+                  color: Colors.deepOrange.shade800,
+                ),
+                onPressed: () async {
+                  // TODO
+                  _pageManager.pause();
+                },
+              );
             }
+            return NeumorphicButton(
+              margin: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(30.0),
+              child: const Icon(
+                Icons.play_arrow,
+                color: Colors.white54,
+                size: 30,
+              ),
+              style: const NeumorphicStyle(
+                boxShape: NeumorphicBoxShape.circle(),
+                shape: NeumorphicShape.convex,
+                color: Colors.black54,
+              ),
+              onPressed: () async {
+                // TODO
+                _pageManager.play();
+              },
+            );
           },
         ),
         NeumorphicButton(
