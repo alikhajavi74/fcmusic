@@ -1,5 +1,4 @@
 import 'package:fcmusic/back_end.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -57,9 +56,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var appBar = Row(
       children: [
-        SizedBox(width: 10, height: 60),
+        const SizedBox(width: 10, height: 60),
         NeumorphicButton(
-          child: Icon(Icons.arrow_back_rounded, color: Colors.white54, size: 20),
+          child: const Icon(Icons.arrow_back_rounded, color: Colors.white54, size: 20),
           style: const NeumorphicStyle(
             color: Colors.black54,
             shape: NeumorphicShape.convex,
@@ -73,7 +72,7 @@ class _HomePageState extends State<HomePage> {
         const Text("PLAYING NOW", style: TextStyle(color: Colors.white54, fontSize: 14, fontWeight: FontWeight.bold)),
         const Spacer(),
         NeumorphicButton(
-          child: Icon(Icons.menu, color: Colors.white54, size: 18),
+          child: const Icon(Icons.menu, color: Colors.white54, size: 18),
           style: const NeumorphicStyle(
             color: Colors.black54,
             shape: NeumorphicShape.convex,
@@ -83,7 +82,7 @@ class _HomePageState extends State<HomePage> {
             // TODO
           },
         ),
-        SizedBox(width: 10, height: 60),
+        const SizedBox(width: 10, height: 60),
       ],
     );
     var image = Neumorphic(
@@ -128,12 +127,12 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     "${value.current.inSeconds.toDouble()}",
-                    style: TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
+                    style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     "${value.total.inSeconds.toDouble()}",
-                    style: TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
+                    style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                 ],
               ),
@@ -148,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 accent: Colors.green,
               ),
-              onChanged: (newValue) {
+              onChangeEnd: (newValue) {
                 _pageManager.seek(Duration(seconds: newValue.toInt()));
               },
             ),
@@ -247,18 +246,18 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             appBar,
-            Spacer(flex: 2),
+            const Spacer(flex: 2),
             image,
-            Spacer(flex: 2),
-            SizedBox(height: 5.0),
+            const Spacer(flex: 2),
+            const SizedBox(height: 5.0),
             title,
-            SizedBox(height: 15.0),
+            const SizedBox(height: 15.0),
             subTitle,
-            Spacer(flex: 2),
+            const Spacer(flex: 2),
             slider,
-            Spacer(flex: 2),
+            const Spacer(flex: 2),
             playAndNextAndPreviusButtons,
-            SizedBox(height: 45.0),
+            const SizedBox(height: 45.0),
           ],
         ),
       ),

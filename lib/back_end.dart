@@ -23,7 +23,7 @@ class PageManager {
   void _init() async {
     _audioPlayer = AudioPlayer();
     // await _audioPlayer.setUrl(url);
-    await _audioPlayer.setAsset("music/Arash - Dooset Daram Ft Helena .mp3");
+    await _audioPlayer.setAsset("music/Roy Jones - Can't be touched-320k.mp3");
 
     _audioPlayer.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
