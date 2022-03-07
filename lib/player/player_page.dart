@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fcmusic/mfw/dependencies/mfw_utils.dart';
 import 'package:fcmusic/player/player_page_manager.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:marquee/marquee.dart';
 
 class PlayerPage extends StatefulWidget {
   final String path;
@@ -64,37 +65,49 @@ class _PlayerPageState extends State<PlayerPage> {
         const SizedBox(width: 10, height: 60),
       ],
     );
-    var image = ValueListenableBuilder<ButtonState>(
-      valueListenable: _pageManager.buttonStateValueNotifier,
-      builder: (context, value, child) {
-        return Neumorphic(
-          child: widget.image != null
-              ? Image.memory(
-                  widget.image!,
-                  width: 250,
-                  height: 250,
-                  fit: BoxFit.cover,
-                )
-              : Image.asset(
-                  "image/default_image_player.jpg",
-                  width: 250,
-                  height: 250,
-                  fit: BoxFit.cover,
-                ),
-          style: NeumorphicStyle(
-            border: NeumorphicBorder(color: value == ButtonState.playing ? Colors.deepOrangeAccent : Colors.blueGrey, width: 2.0, isEnabled: true),
-            depth: 6,
-            shadowLightColor: value == ButtonState.playing ? Colors.orange : Colors.blueGrey,
-            shadowDarkColor: value == ButtonState.playing ? Colors.deepOrange : Colors.blueGrey,
-            boxShape: NeumorphicBoxShape.circle(),
-            shape: NeumorphicShape.convex,
-          ),
-        );
-      },
+    var image = Flexible(
+      flex: 6,
+      fit: FlexFit.loose,
+      child: ValueListenableBuilder<ButtonState>(
+        valueListenable: _pageManager.buttonStateValueNotifier,
+        builder: (context, value, child) {
+          return Neumorphic(
+            child: widget.image != null
+                ? ColorFiltered(
+                    colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
+                    child: Image.memory(
+                      widget.image!,
+                      width: 300,
+                      height: 300,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : ColorFiltered(
+                    colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
+                    child: Image.asset(
+                      "image/default_image_player.jpg",
+                      width: 300,
+                      height: 300,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+            style: NeumorphicStyle(
+              border: NeumorphicBorder(color: value == ButtonState.playing ? Colors.deepOrangeAccent : Colors.blue, width: 2.0, isEnabled: true),
+              depth: value == ButtonState.playing ? 9 : 5,
+              shadowLightColor: value == ButtonState.playing ? Colors.orange : Colors.blue,
+              shadowDarkColor: value == ButtonState.playing ? Colors.deepOrange : Colors.blue,
+              boxShape: const NeumorphicBoxShape.circle(),
+              shape: NeumorphicShape.convex,
+            ),
+          );
+        },
+      ),
     );
     var title = Text(
       widget.title ?? "Unknown",
       textAlign: TextAlign.center,
+      softWrap: false,
+      overflow: TextOverflow.ellipsis,
       style: const TextStyle(
         color: Colors.white54,
         fontSize: 17,
@@ -102,24 +115,28 @@ class _PlayerPageState extends State<PlayerPage> {
         fontWeight: FontWeight.w500,
       ),
     );
-    var subTitle = Text(
-      widget.name ?? "",
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        color: Colors.white54,
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 4.0,
+    var subTitle = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      height: 20,
+      child: Marquee(
+        text: widget.name ?? "",
+        blankSpace: 60,
+        style: const TextStyle(
+          color: Colors.white54,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          letterSpacing: 2.0,
+        ),
       ),
     );
     var slider = ValueListenableBuilder<ProgressBarState>(
       valueListenable: _pageManager.progressBarStateValueNotifier,
       builder: (context, value, child) {
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Row(
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              Row(
                 children: [
                   Text(
                     convertDurationToMinute(value.current),
@@ -132,120 +149,134 @@ class _PlayerPageState extends State<PlayerPage> {
                   ),
                 ],
               ),
-            ),
-            Slider(
-              value: value.current.inMilliseconds.toDouble(),
-              max: value.total.inMilliseconds.toDouble(),
-              activeColor: Colors.deepOrange,
-              thumbColor: Colors.deepOrange,
-              inactiveColor: Colors.white54,
-              onChanged: (newValue) {
-                _pageManager.seek(Duration(milliseconds: newValue.toInt()));
-              },
-            ),
-          ],
+              const SizedBox(height: 2.0),
+              SliderTheme(
+                data: SliderThemeData(overlayShape: SliderComponentShape.noThumb),
+                child: Slider(
+                  value: value.current.inMilliseconds.toDouble(),
+                  max: value.total.inMilliseconds.toDouble(),
+                  activeColor: Colors.deepOrange,
+                  thumbColor: Colors.deepOrange,
+                  inactiveColor: Colors.white54,
+                  onChanged: (double newValue) {
+                    _pageManager.seek(Duration(milliseconds: newValue.toInt()));
+                  },
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
-    var playAndNextAndPreviusButtons = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        NeumorphicButton(
-          margin: const EdgeInsets.all(10.0),
-          padding: const EdgeInsets.all(20.0),
-          child: const Icon(
-            Icons.skip_previous,
-            color: Colors.white54,
-            size: 20,
-          ),
-          style: const NeumorphicStyle(
-            boxShape: NeumorphicBoxShape.circle(),
-            shape: NeumorphicShape.convex,
-            color: Colors.black54,
-          ),
-          onPressed: () {
-            // TODO
-          },
-        ),
-        ValueListenableBuilder<ButtonState>(
-          valueListenable: _pageManager.buttonStateValueNotifier,
-          builder: (context, value, child) {
-            if (value == ButtonState.playing) {
-              return NeumorphicButton(
-                margin: const EdgeInsets.all(10.0),
-                padding: const EdgeInsets.all(30.0),
-                child: const Icon(
-                  Icons.pause,
-                  color: Colors.white54,
-                  size: 30,
-                ),
-                style: NeumorphicStyle(
-                  boxShape: const NeumorphicBoxShape.circle(),
-                  shape: NeumorphicShape.concave,
-                  color: Colors.deepOrange.shade800,
-                ),
-                onPressed: () async {
-                  // TODO
-                  _pageManager.pause();
-                },
-              );
-            }
-            return NeumorphicButton(
-              margin: const EdgeInsets.all(10.0),
-              padding: const EdgeInsets.all(30.0),
+    var playAndNextAndPreviusButtons = Flexible(
+      flex: 3,
+      fit: FlexFit.loose,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 60,
+            width: 60,
+            margin: const EdgeInsets.all(2.0),
+            child: NeumorphicButton(
               child: const Icon(
-                Icons.play_arrow,
+                Icons.skip_previous,
                 color: Colors.white54,
-                size: 30,
+                size: 20,
               ),
               style: const NeumorphicStyle(
                 boxShape: NeumorphicBoxShape.circle(),
                 shape: NeumorphicShape.convex,
                 color: Colors.black54,
               ),
-              onPressed: () async {
+              onPressed: () {
                 // TODO
-                _pageManager.play();
               },
-            );
-          },
-        ),
-        NeumorphicButton(
-          margin: const EdgeInsets.all(10.0),
-          padding: const EdgeInsets.all(20.0),
-          child: const Icon(
-            Icons.skip_next,
-            color: Colors.white54,
-            size: 20,
+            ),
           ),
-          style: const NeumorphicStyle(
-            boxShape: NeumorphicBoxShape.circle(),
-            shape: NeumorphicShape.convex,
-            color: Colors.black54,
+          Container(
+            height: 100,
+            width: 100,
+            margin: const EdgeInsets.all(5.0),
+            child: ValueListenableBuilder<ButtonState>(
+              valueListenable: _pageManager.buttonStateValueNotifier,
+              builder: (context, value, child) {
+                if (value == ButtonState.playing) {
+                  return NeumorphicButton(
+                    child: const Icon(
+                      Icons.pause,
+                      color: Colors.white54,
+                      size: 30,
+                    ),
+                    style: NeumorphicStyle(
+                      boxShape: const NeumorphicBoxShape.circle(),
+                      shape: NeumorphicShape.concave,
+                      color: Colors.deepOrange.shade800,
+                    ),
+                    onPressed: () async {
+                      // TODO
+                      _pageManager.pause();
+                    },
+                  );
+                }
+                return NeumorphicButton(
+                  child: const Icon(
+                    Icons.play_arrow,
+                    color: Colors.white54,
+                    size: 30,
+                  ),
+                  style: const NeumorphicStyle(
+                    boxShape: NeumorphicBoxShape.circle(),
+                    shape: NeumorphicShape.convex,
+                    color: Colors.black54,
+                  ),
+                  onPressed: () async {
+                    // TODO
+                    _pageManager.play();
+                  },
+                );
+              },
+            ),
           ),
-          onPressed: () {
-            // TODO
-          },
-        ),
-      ],
+          Container(
+            height: 60,
+            width: 60,
+            margin: const EdgeInsets.all(2.0),
+            child: NeumorphicButton(
+              child: const Icon(
+                Icons.skip_next,
+                color: Colors.white54,
+                size: 20,
+              ),
+              style: const NeumorphicStyle(
+                boxShape: NeumorphicBoxShape.circle(),
+                shape: NeumorphicShape.convex,
+                color: Colors.black54,
+              ),
+              onPressed: () {
+                // TODO
+              },
+            ),
+          ),
+        ],
+      ),
     );
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             appBar,
-            const Spacer(flex: 2),
+            const Spacer(),
             image,
-            const Spacer(flex: 2),
-            const SizedBox(height: 5.0),
+            const SizedBox(height: 30.0),
             title,
-            const SizedBox(height: 15.0),
+            const SizedBox(height: 20.0),
             subTitle,
-            const Spacer(flex: 2),
+            const SizedBox(height: 20.0),
             slider,
-            const Spacer(flex: 2),
+            const SizedBox(height: 20.0),
             playAndNextAndPreviusButtons,
-            const SizedBox(height: 45.0),
+            const Spacer(),
           ],
         ),
       ),
