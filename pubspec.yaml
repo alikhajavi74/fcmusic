@@ -38,6 +38,7 @@ dependencies:
   just_audio: ^0.9.20
   audio_session: ^0.1.6+1
   rxdart: ^0.27.3
+  permission_handler: ^9.2.0
 
   # mfw:
   ansicolor: ^2.0.1

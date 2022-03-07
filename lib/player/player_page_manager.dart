@@ -22,7 +22,8 @@ class PlayerPageManager {
 
   void _init() async {
     _audioPlayer = AudioPlayer();
-    await _audioPlayer.setAsset("audio/Roy Jones - Can't be touched-320k.mp3");
+    // await _audioPlayer.setAsset("audio/Roy Jones - Can't be touched-320k.mp3");
+    await _audioPlayer.setFilePath(path);
 
     _audioPlayer.playerStateStream.listen((playerState) {
       final isPlaying = playerState.playing;
