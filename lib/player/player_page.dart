@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:fcmusic/mfw/dependencies/mfw_utils.dart';
-import 'package:fcmusic/player/player_page_manager.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:marquee/marquee.dart';
+
+import 'player_page_manager.dart';
 
 class PlayerPage extends StatefulWidget {
   final String path;
@@ -71,33 +72,36 @@ class _PlayerPageState extends State<PlayerPage> {
       child: ValueListenableBuilder<ButtonState>(
         valueListenable: _pageManager.buttonStateValueNotifier,
         builder: (context, value, child) {
-          return Neumorphic(
-            child: widget.image != null
-                ? ColorFiltered(
-                    colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
-                    child: Image.memory(
-                      widget.image!,
-                      width: 300,
-                      height: 300,
-                      fit: BoxFit.cover,
+          return Hero(
+            tag: "tag${widget.title}",
+            child: Neumorphic(
+              child: widget.image != null
+                  ? ColorFiltered(
+                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
+                      child: Image.memory(
+                        widget.image!,
+                        width: 300,
+                        height: 300,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : ColorFiltered(
+                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
+                      child: Image.asset(
+                        "image/default_image_player.jpg",
+                        width: 300,
+                        height: 300,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  )
-                : ColorFiltered(
-                    colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
-                    child: Image.asset(
-                      "image/default_image_player.jpg",
-                      width: 300,
-                      height: 300,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-            style: NeumorphicStyle(
-              border: NeumorphicBorder(color: value == ButtonState.playing ? Colors.deepOrangeAccent : Colors.blue, width: 2.0, isEnabled: true),
-              depth: value == ButtonState.playing ? 9 : 5,
-              shadowLightColor: value == ButtonState.playing ? Colors.orange : Colors.blue,
-              shadowDarkColor: value == ButtonState.playing ? Colors.deepOrange : Colors.blue,
-              boxShape: const NeumorphicBoxShape.circle(),
-              shape: NeumorphicShape.convex,
+              style: NeumorphicStyle(
+                border: NeumorphicBorder(color: value == ButtonState.playing ? Colors.deepOrangeAccent : Colors.blue, width: 2.0, isEnabled: true),
+                depth: value == ButtonState.playing ? 9 : 5,
+                shadowLightColor: value == ButtonState.playing ? Colors.orange : Colors.blue,
+                shadowDarkColor: value == ButtonState.playing ? Colors.deepOrange : Colors.blue,
+                boxShape: const NeumorphicBoxShape.circle(),
+                shape: NeumorphicShape.convex,
+              ),
             ),
           );
         },
@@ -139,12 +143,12 @@ class _PlayerPageState extends State<PlayerPage> {
               Row(
                 children: [
                   Text(
-                    convertDurationToMinute(value.current),
+                    convertDurationToMinute1(value.current),
                     style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                   const Spacer(),
                   Text(
-                    convertDurationToMinute(value.total),
+                    convertDurationToMinute1(value.total),
                     style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                 ],
