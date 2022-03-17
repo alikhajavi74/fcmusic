@@ -33,7 +33,7 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
           state.subTitle,
           state.songDuration,
           state.currentDuration,
-          PlayButtonState.pause,
+          PlayButtonState.notplaying,
         ));
       } else if (!isPlaying) {
         emit(PlayerCubitState(
@@ -42,7 +42,7 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
           state.subTitle,
           state.songDuration,
           state.currentDuration,
-          PlayButtonState.pause,
+          PlayButtonState.notplaying,
         ));
       } else if (processingState != ProcessingState.completed) {
         emit(PlayerCubitState(
@@ -51,7 +51,7 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
           state.subTitle,
           state.songDuration,
           state.currentDuration,
-          PlayButtonState.play,
+          PlayButtonState.playing,
         ));
       } else {
         seekToIndext(0);
@@ -80,7 +80,7 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
             currentSongTag.fileName,
             currentSongTag.songDuration,
             Duration.zero,
-            PlayButtonState.play,
+            audioPlayer.playing ? PlayButtonState.playing : PlayButtonState.notplaying,
           ));
         }
       }
@@ -103,7 +103,7 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
     audioPlayer.seek(duration);
   }
 
-  void seekToIndext(int index) {
+  void seekToIndext(int index) async {
     AudioMetaData newSongTag = audioPlayer.sequence![index].tag;
     emit(PlayerCubitState(
       newSongTag.image,
@@ -111,9 +111,10 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
       newSongTag.fileName,
       newSongTag.songDuration,
       Duration.zero,
-      PlayButtonState.play,
+      PlayButtonState.playing,
     ));
-    audioPlayer.seek(Duration.zero, index: index);
+    await audioPlayer.seek(Duration.zero, index: index);
+    await audioPlayer.play();
   }
 
   void seekToNext() {
@@ -148,7 +149,7 @@ class PlayerCubitState {
     "SubTitle",
     Duration.zero,
     Duration.zero,
-    PlayButtonState.pause,
+    PlayButtonState.notplaying,
   );
 
   Uint8List? image;
@@ -162,6 +163,6 @@ class PlayerCubitState {
 }
 
 enum PlayButtonState {
-  play,
-  pause,
+  playing,
+  notplaying,
 }

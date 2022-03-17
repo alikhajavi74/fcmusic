@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:fcmusic/mfw/dependencies/mfw_utils.dart';
 import 'package:fcmusic/player/bloc/player_cubit.dart';
 import 'package:fcmusic/player/models/player_models.dart';
@@ -12,13 +14,94 @@ class SongsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ConcatenatingAudioSource concatedSongs = context.read<PlayerCubit>().concatenatingAudioSource;
+    PlayerCubit _playerCubit = context.read<PlayerCubit>();
     return SafeArea(
       child: Scaffold(
-        body: ListView.builder(
-          itemCount: concatedSongs.length,
-          itemBuilder: (context, position) {
-            return SongListTile(position: position, indexedAudioSource: concatedSongs.sequence[position]);
+        body: BlocBuilder<PlayerCubit, PlayerCubitState>(
+          bloc: _playerCubit,
+          buildWhen: (pState, state) {
+            if (pState.image != state.image || pState.playButtonState != state.playButtonState) {
+              return true;
+            }
+            return false;
+          },
+          builder: (context, state) {
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                state.image != null ? Image.memory(state.image!, fit: BoxFit.fill) : Image.asset("image/default_song_image.jpg", fit: BoxFit.fill),
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                  child: Container(
+                    color: Colors.grey.shade900.withOpacity(0.8),
+                    child: ListView.builder(
+                      itemCount: _playerCubit.concatenatingAudioSource.length,
+                      itemBuilder: (context, position) {
+                        return SongListTile(position: position, indexedAudioSource: _playerCubit.concatenatingAudioSource.sequence[position]);
+                      },
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: 80,
+                      color: Colors.black87,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(120),
+                              child: state.image != null
+                                  ? ColorFiltered(
+                                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.60), BlendMode.dstATop),
+                                      child: Image.memory(state.image!, fit: BoxFit.cover),
+                                    )
+                                  : ColorFiltered(
+                                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.60), BlendMode.dstATop),
+                                      child: Image.asset("image/default_song_image.jpg", fit: BoxFit.cover),
+                                    ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 6,
+                            fit: FlexFit.tight,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(state.title ?? state.subTitle, softWrap: false, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+                                const SizedBox(height: 5),
+                                Text(state.subTitle, softWrap: false, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w400)),
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: state.playButtonState == PlayButtonState.playing ? const Icon(Icons.pause, color: Colors.white, size: 25) : const Icon(Icons.play_arrow, color: Colors.white, size: 25),
+                            padding: const EdgeInsets.only(right: 20, top: 5, bottom: 5),
+                            onPressed: () {
+                              if (_playerCubit.audioPlayer.playing) {
+                                _playerCubit.pause();
+                              } else {
+                                _playerCubit.play();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+                      return PlayerPage(songIndex: _playerCubit.audioPlayer.currentIndex ?? 0);
+                    }));
+                  },
+                ),
+              ],
+            );
           },
         ),
       ),
@@ -39,27 +122,30 @@ class SongListTile extends StatefulWidget {
 class _SongListTileState extends State<SongListTile> {
   @override
   Widget build(BuildContext context) {
+    PlayerCubit _playerCubit = context.read<PlayerCubit>();
     AudioMetaData songTag = widget.indexedAudioSource.tag as AudioMetaData;
     var image = Neumorphic(
-      style: const NeumorphicStyle(
+      style: NeumorphicStyle(
+        border: NeumorphicBorder(color: (widget.position == _playerCubit.audioPlayer.currentIndex) ? Colors.deepOrangeAccent : Colors.transparent, width: 1.0, isEnabled: true),
+        depth: (widget.position == _playerCubit.audioPlayer.currentIndex) ? 9.0 : 6.0,
+        shadowLightColor: (widget.position == _playerCubit.audioPlayer.currentIndex) ? Colors.orange : Colors.white38,
+        shadowDarkColor: (widget.position == _playerCubit.audioPlayer.currentIndex) ? Colors.deepOrange : Colors.black87,
         shape: NeumorphicShape.convex,
-        boxShape: NeumorphicBoxShape.circle(),
-        depth: 6.0,
-        shadowLightColor: Colors.white38,
-        shadowDarkColor: Colors.black87,
+        boxShape: const NeumorphicBoxShape.circle(),
       ),
       child: SizedBox(
-          height: 120,
-          width: 120,
-          child: songTag.image != null
-              ? ColorFiltered(
-                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.60), BlendMode.dstATop),
-                  child: Image.memory(songTag.image!, fit: BoxFit.cover),
-                )
-              : ColorFiltered(
-                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.60), BlendMode.dstATop),
-                  child: Image.asset("image/default_song_image.jpg", fit: BoxFit.cover),
-                )),
+        height: 120,
+        width: 120,
+        child: songTag.image != null
+            ? ColorFiltered(
+                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.60), BlendMode.dstATop),
+                child: Image.memory(songTag.image!, fit: BoxFit.cover),
+              )
+            : ColorFiltered(
+                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.60), BlendMode.dstATop),
+                child: Image.asset("image/default_song_image.jpg", fit: BoxFit.cover),
+              ),
+      ),
     );
     var info = Flexible(
       flex: 1,
