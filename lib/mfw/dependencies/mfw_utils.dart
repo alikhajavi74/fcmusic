@@ -66,3 +66,15 @@ void mWidgetBindig(BuildContext context, MVoidCallbackWithContext function) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+
+// Navigation:
+
+void goAnotherRoute(BuildContext context, Widget route) {
+  Navigator.of(context).push(
+    MaterialPageRoute(builder: (context) {
+      return route;
+    }),
+  );
+}
+
+// --------------------------------------------------------------------------------------------------------------------

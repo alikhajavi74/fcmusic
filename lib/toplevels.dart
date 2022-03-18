@@ -1,9 +1,14 @@
 import 'package:fcmusic/player/models/player_models.dart';
-import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 
-const MethodChannel songsMethodChannel = MethodChannel("ir.faracodeteam.fcmusic/songs");
+// Method channel info:
+const String songsMethodChannelName = "ir.faracodeteam.fcmusic/songs";
 
+const String songsMethodName = "getSongs";
+
+const String androidVersionMethodName = "getAndroidVersion";
+
+// Utilities functions:
 ConcatenatingAudioSource concatSongs(List songs) {
   ConcatenatingAudioSource concatenatingAudioSource = ConcatenatingAudioSource(children: []);
   for (var song in songs) {

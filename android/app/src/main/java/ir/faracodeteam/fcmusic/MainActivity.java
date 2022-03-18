@@ -49,6 +49,7 @@ public class MainActivity extends FlutterActivity {
       HashMap<Object, Object> map = new HashMap<>();
       map.put("file_path", songMP3File.getAbsolutePath());
       map.put("file_name", songMP3File.getName());
+      map.put("file_folder", songMP3File.getParentFile().getName());
       MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
       mediaMetadataRetriever.setDataSource(songMP3File.getAbsolutePath());
       map.put("image", mediaMetadataRetriever.getEmbeddedPicture());

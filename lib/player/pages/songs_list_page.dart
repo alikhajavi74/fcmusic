@@ -20,10 +20,10 @@ class SongsListPage extends StatelessWidget {
         body: BlocBuilder<PlayerCubit, PlayerCubitState>(
           bloc: _playerCubit,
           buildWhen: (pState, state) {
-            if (pState.image != state.image || pState.playButtonState != state.playButtonState) {
-              return true;
+            if (pState.currentDuration != state.currentDuration || pState.songDuration != state.songDuration) {
+              return false;
             }
-            return false;
+            return true;
           },
           builder: (context, state) {
             return Stack(
