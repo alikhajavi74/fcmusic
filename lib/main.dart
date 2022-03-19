@@ -1,6 +1,8 @@
 import 'package:fcmusic/intro/bloc/intro_cubit.dart';
+import 'package:fcmusic/intro/pages/permision_page.dart';
 import 'package:fcmusic/player/bloc/player_cubit.dart';
 import 'package:fcmusic/player/pages/songs_list_page.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:just_audio/just_audio.dart';
@@ -65,12 +67,12 @@ class _HomePageState extends State<HomePage> {
               context.read<PlayerCubit>().changePlayList(context.read<IntroCubit>().concatedAllSongs);
               return const SongsListPage();
             } else if (state == IntroCubitState.notAccessToStorage) {
-              return Center(
-                child: ElevatedButton(
-                  child: const Text("تایید مجوز دسترسی"),
-                  onPressed: () async {
-                    await context.read<IntroCubit>().sendRequestAccessStorage();
-                  },
+              return const PermisionPage();
+            } else if (state == IntroCubitState.loadingSongs) {
+              return const Center(
+                child: SizedBox.square(
+                  dimension: 30.0,
+                  child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 1.5),
                 ),
               );
             }

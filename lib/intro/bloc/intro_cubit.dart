@@ -8,9 +8,10 @@ class IntroCubit extends Cubit<IntroCubitState> {
   final MethodChannel methodChannel = const MethodChannel(songsMethodChannelName);
   late ConcatenatingAudioSource concatedAllSongs;
 
-  IntroCubit() : super(IntroCubitState.unknown);
+  IntroCubit() : super(IntroCubitState.loadingSongs);
 
   Future<void> init() async {
+    emit(IntroCubitState.loadingSongs);
     List? songs = await methodChannel.invokeMethod(songsMethodName) as List?;
     if (songs == null || songs.isEmpty) {
       emit(IntroCubitState.notAccessToStorage);
@@ -24,8 +25,12 @@ class IntroCubit extends Cubit<IntroCubitState> {
   Future<void> sendRequestAccessStorage() async {
     int versian = await methodChannel.invokeMethod(androidVersionMethodName);
     if (versian >= 30) {
-      await Permission.manageExternalStorage.request();
-      init();
+      PermissionStatus permissionStatus = await Permission.manageExternalStorage.request();
+      if (permissionStatus.isGranted) {
+        init();
+      } else {
+        sendRequestAccessStorage();
+      }
     } else {
       await Permission.storage.request();
       init();
@@ -35,6 +40,7 @@ class IntroCubit extends Cubit<IntroCubitState> {
 
 enum IntroCubitState {
   readySongs,
+  loadingSongs,
   notAccessToStorage,
   unknown,
 }
