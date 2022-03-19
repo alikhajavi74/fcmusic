@@ -9,7 +9,7 @@ const String songsMethodName = "getSongs";
 const String androidVersionMethodName = "getAndroidVersion";
 
 // Utilities functions:
-ConcatenatingAudioSource concatSongs(List songs) {
+ConcatenatingAudioSource concatAllSongs(List songs) {
   ConcatenatingAudioSource concatenatingAudioSource = ConcatenatingAudioSource(children: []);
   for (var song in songs) {
     concatenatingAudioSource.add(
@@ -18,6 +18,7 @@ ConcatenatingAudioSource concatSongs(List songs) {
         tag: AudioMetaData(
           filePath: song["file_path"],
           fileName: song["file_name"],
+          fileFolder: song["file_folder"],
           image: song["image"],
           title: song["title"],
           songDuration: Duration(milliseconds: int.parse(song["duration"])),
@@ -26,6 +27,34 @@ ConcatenatingAudioSource concatSongs(List songs) {
     );
   }
   return concatenatingAudioSource;
+}
+
+Map<String, ConcatenatingAudioSource> concatFoldersSongs(List songs) {
+  Map<String, ConcatenatingAudioSource> concatedSongsOfFoldersMap = {};
+  Set<String> foldersNameSet = {};
+  for (var song in songs) {
+    foldersNameSet.add(song["file_folder"]);
+  }
+  for (String folderName in foldersNameSet) {
+    concatedSongsOfFoldersMap.addAll({folderName: ConcatenatingAudioSource(children: [])});
+  }
+  for (var song in songs) {
+    String songFolderName = song["file_folder"] as String;
+    concatedSongsOfFoldersMap[songFolderName]?.add(
+      AudioSource.uri(
+        Uri.parse(song["file_path"]),
+        tag: AudioMetaData(
+          filePath: song["file_path"],
+          fileName: song["file_name"],
+          fileFolder: song["file_folder"],
+          image: song["image"],
+          title: song["title"],
+          songDuration: Duration(milliseconds: int.parse(song["duration"])),
+        ),
+      ),
+    );
+  }
+  return concatedSongsOfFoldersMap;
 }
 
 String convertSongFileNameToSongName(String fileName) {

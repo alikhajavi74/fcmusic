@@ -10,10 +10,13 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:just_audio/just_audio.dart';
 
 class SongsListPage extends StatelessWidget {
-  const SongsListPage({Key? key}) : super(key: key);
+  final ConcatenatingAudioSource concatedSongs;
+
+  const SongsListPage({Key? key, required this.concatedSongs}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    context.read<PlayerCubit>().changePlayList(concatedSongs);
     PlayerCubit _playerCubit = context.read<PlayerCubit>();
     return SafeArea(
       child: Scaffold(

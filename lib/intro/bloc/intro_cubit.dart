@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 class IntroCubit extends Cubit<IntroCubitState> {
   final MethodChannel methodChannel = const MethodChannel(songsMethodChannelName);
   late ConcatenatingAudioSource concatedAllSongs;
+  late Map<String, ConcatenatingAudioSource> concatedFoldersSongs;
 
   IntroCubit() : super(IntroCubitState.loadingSongs);
 
@@ -16,7 +17,8 @@ class IntroCubit extends Cubit<IntroCubitState> {
     if (songs == null || songs.isEmpty) {
       emit(IntroCubitState.notAccessToStorage);
     } else {
-      concatedAllSongs = concatSongs(songs);
+      concatedAllSongs = concatAllSongs(songs);
+      concatedFoldersSongs = concatFoldersSongs(songs);
       await Future.delayed(const Duration(seconds: 3));
       emit(IntroCubitState.readySongs);
     }
