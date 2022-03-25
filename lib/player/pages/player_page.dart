@@ -46,7 +46,6 @@ class _PlayerPageState extends State<PlayerPage> {
                       filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                       child: Container(
                         color: Colors.grey.shade900.withOpacity(0.8),
-                        alignment: Alignment.center,
                         child: Column(
                           children: [
                             Row(
@@ -116,39 +115,57 @@ class _PlayerPageState extends State<PlayerPage> {
                             ),
                             const SizedBox(height: 30.0),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              height: 20,
-                              child: Text(
-                                state.title ?? convertSongFileNameToSongName(state.subTitle),
-                                textAlign: TextAlign.center,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 2.0,
-                                ),
+                              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 55,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(width: double.infinity),
+                                          Text(
+                                            state.title ?? convertSongFileNameToSongName(state.subTitle),
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.start,
+                                            style: const TextStyle(
+                                              color: Colors.white54,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 2.0,
+                                            ),
+                                          ),
+                                          Text(
+                                            state.subTitle,
+                                            softWrap: false,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Colors.white54,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w300,
+                                              letterSpacing: 2.0,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5.0),
+                                  IconButton(
+                                    icon: const Icon(Icons.favorite, color: Colors.white54, size: 35.0),
+                                    padding: const EdgeInsets.all(0),
+                                    constraints: const BoxConstraints.tightFor(width: 35.0, height: 35.0),
+                                    onPressed: () {
+                                      // TODO
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 20.0),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              height: 20,
-                              child: Text(
-                                state.subTitle,
-                                textAlign: TextAlign.center,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20.0),
                             BlocBuilder<PlayerCubit, PlayerCubitState>(
                               bloc: _playerCubit,
                               buildWhen: (pState, state) {
@@ -159,25 +176,12 @@ class _PlayerPageState extends State<PlayerPage> {
                               },
                               builder: (context, state) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
                                   child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            convertDurationToMinute1(state.currentDuration),
-                                            style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
-                                          ),
-                                          const Spacer(),
-                                          Text(
-                                            convertDurationToMinute1(state.songDuration),
-                                            style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 13),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 2.0),
                                       SliderTheme(
-                                        data: SliderThemeData(overlayShape: SliderComponentShape.noThumb),
+                                        data: SliderThemeData(trackShape: CustomTrackShape()),
                                         child: Slider(
                                           value: state.currentDuration.inMilliseconds.toDouble(),
                                           max: state.songDuration.inMilliseconds.toDouble(),
@@ -188,6 +192,19 @@ class _PlayerPageState extends State<PlayerPage> {
                                             _playerCubit.seekToDuration(Duration(milliseconds: newValue.toInt()));
                                           },
                                         ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            convertDurationToMinute1(state.currentDuration),
+                                            style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 11),
+                                          ),
+                                          const Spacer(),
+                                          Text(
+                                            convertDurationToMinute1(state.songDuration),
+                                            style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w600, fontSize: 11),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -201,6 +218,14 @@ class _PlayerPageState extends State<PlayerPage> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.repeat_one, color: Colors.deepOrange),
+                                    color: Colors.white54,
+                                    onPressed: () {
+                                      // TODO
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
                                   Container(
                                     height: 60,
                                     width: 60,
@@ -289,6 +314,14 @@ class _PlayerPageState extends State<PlayerPage> {
                                       },
                                     ),
                                   ),
+                                  const SizedBox(width: 10),
+                                  IconButton(
+                                    icon: const Icon(Icons.shuffle, color: Colors.white24),
+                                    color: Colors.white54,
+                                    onPressed: () {
+                                      // TODO
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
@@ -303,5 +336,22 @@ class _PlayerPageState extends State<PlayerPage> {
             }),
       ),
     );
+  }
+}
+
+class CustomTrackShape extends RoundedRectSliderTrackShape {
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final double? trackHeight = sliderTheme.trackHeight;
+    final double trackLeft = offset.dx;
+    final double trackTop = offset.dy + (parentBox.size.height - trackHeight!) / 2;
+    final double trackWidth = parentBox.size.width;
+    return Rect.fromLTWH(trackLeft, trackTop, trackWidth, trackHeight);
   }
 }
