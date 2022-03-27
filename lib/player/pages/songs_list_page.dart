@@ -37,11 +37,8 @@ class SongsListPage extends StatelessWidget {
                   filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
                   child: Container(
                     color: Colors.grey.shade900.withOpacity(0.8),
-                    child: ListView.builder(
-                      itemCount: _playerCubit.concatenatingAudioSource.length,
-                      itemBuilder: (context, position) {
-                        return SongListTile(position: position, indexedAudioSource: _playerCubit.concatenatingAudioSource.sequence[position]);
-                      },
+                    child: ListView(
+                      children: [for (int i = 0; i < concatedSongs.length; i++) SongListTile(position: i, indexedAudioSource: _playerCubit.concatenatingAudioSource.sequence[i])],
                     ),
                   ),
                 ),

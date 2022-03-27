@@ -1,6 +1,6 @@
-import 'package:fcmusic/folders_page.dart';
 import 'package:fcmusic/intro/bloc/intro_cubit.dart';
 import 'package:fcmusic/intro/pages/permision_page.dart';
+import 'package:fcmusic/library/library_page.dart';
 import 'package:fcmusic/player/bloc/player_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
           bloc: context.read<IntroCubit>(),
           builder: (BuildContext context, IntroCubitState state) {
             if (state == IntroCubitState.readySongs) {
-              return const FoldersPage();
+              return const LibraryPage();
             } else if (state == IntroCubitState.notAccessToStorage) {
               return const PermisionPage();
             } else if (state == IntroCubitState.loadingSongs) {
