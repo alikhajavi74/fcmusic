@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:blur/blur.dart';
 import 'package:fcmusic/mfw/dependencies/mfw_utils.dart';
 import 'package:fcmusic/player/bloc/player_cubit.dart';
 import 'package:fcmusic/player/models/player_models.dart';
@@ -32,15 +31,16 @@ class SongsListPage extends StatelessWidget {
             return Stack(
               fit: StackFit.expand,
               children: [
-                state.image != null ? Image.memory(state.image!, fit: BoxFit.fill) : Image.asset("image/default_song_image.jpg", fit: BoxFit.fill),
-                BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-                  child: Container(
-                    color: Colors.grey.shade900.withOpacity(0.8),
-                    child: ListView(
-                      children: [for (int i = 0; i < concatedSongs.length; i++) SongListTile(position: i, indexedAudioSource: _playerCubit.concatenatingAudioSource.sequence[i])],
-                    ),
+                Positioned.fill(
+                  child: Blur(
+                    blur: 60,
+                    blurColor: Colors.grey.shade900,
+                    colorOpacity: 0.8,
+                    child: state.image != null ? SizedBox.expand(child: Image.memory(state.image!, fit: BoxFit.cover, height: 200, width: 200)) : SizedBox(height: double.infinity, child: Image.asset("image/default_song_image.jpg", fit: BoxFit.cover, height: 200, width: 200)),
                   ),
+                ),
+                ListView(
+                  children: [for (int i = 0; i < concatedSongs.length; i++) SongListTile(position: i, indexedAudioSource: _playerCubit.concatenatingAudioSource.sequence[i])],
                 ),
                 GestureDetector(
                   child: Align(
