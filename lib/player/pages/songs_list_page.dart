@@ -80,7 +80,7 @@ class SongsListPage extends StatelessWidget {
                           ),
                           const Spacer(),
                           IconButton(
-                            icon: state.playButtonState == PlayButtonState.playing ? const Icon(Icons.pause, color: Colors.white, size: 25) : const Icon(Icons.play_arrow, color: Colors.white, size: 25),
+                            icon: state.isPlaying ? const Icon(Icons.pause, color: Colors.white, size: 25) : const Icon(Icons.play_arrow, color: Colors.white, size: 25),
                             padding: const EdgeInsets.only(right: 20, top: 5, bottom: 5),
                             onPressed: () {
                               if (_playerCubit.audioPlayer.playing) {

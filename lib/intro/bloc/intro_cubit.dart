@@ -19,7 +19,7 @@ class IntroCubit extends Cubit<IntroCubitState> {
     } else {
       concatedAllSongs = concatAllSongs(songs);
       concatedFoldersSongs = concatFoldersSongs(songs);
-      await Future.delayed(const Duration(seconds: 3));
+      // await Future.delayed(const Duration(seconds: 1)); // No need
       emit(IntroCubitState.readySongs);
     }
   }

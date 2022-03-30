@@ -13,36 +13,22 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
     init(concatenatingAudioSource);
   }
 
-  Future<void> changePlayList(ConcatenatingAudioSource newConcatenatingAudioSource) async {
-    concatenatingAudioSource = newConcatenatingAudioSource;
-    audioPlayer.sequence?.clear();
-    audioPlayer.sequence?.addAll(concatenatingAudioSource.sequence);
-    await init(concatenatingAudioSource);
-  }
-
   Future<void> init(ConcatenatingAudioSource concatenatingAudioSource) async {
     await audioPlayer.setAudioSource(concatenatingAudioSource);
 
     audioPlayer.playerStateStream.listen((PlayerState playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
-      if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
+      if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering || !isPlaying) {
         emit(PlayerCubitState(
           state.image,
           state.title,
           state.subTitle,
           state.songDuration,
           state.currentDuration,
-          PlayButtonState.notplaying,
-        ));
-      } else if (!isPlaying) {
-        emit(PlayerCubitState(
-          state.image,
-          state.title,
-          state.subTitle,
-          state.songDuration,
-          state.currentDuration,
-          PlayButtonState.notplaying,
+          false,
+          state.isLoopModeOne,
+          state.isShuffleMode,
         ));
       } else if (processingState != ProcessingState.completed) {
         emit(PlayerCubitState(
@@ -51,7 +37,9 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
           state.subTitle,
           state.songDuration,
           state.currentDuration,
-          PlayButtonState.playing,
+          true,
+          state.isLoopModeOne,
+          state.isShuffleMode,
         ));
       } else {
         seekToIndext(0);
@@ -66,7 +54,9 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
         state.subTitle,
         state.songDuration,
         currentPosition,
-        state.playButtonState,
+        state.isPlaying,
+        state.isLoopModeOne,
+        state.isShuffleMode,
       ));
     });
 
@@ -79,12 +69,21 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
             currentSongTag.title,
             currentSongTag.fileName,
             currentSongTag.songDuration,
-            Duration.zero,
-            audioPlayer.playing ? PlayButtonState.playing : PlayButtonState.notplaying,
+            state.currentDuration,
+            audioPlayer.playing,
+            sequenceState.loopMode == LoopMode.one,
+            sequenceState.shuffleModeEnabled,
           ));
         }
       }
     });
+  }
+
+  Future<void> changePlayList(ConcatenatingAudioSource newConcatenatingAudioSource) async {
+    concatenatingAudioSource = newConcatenatingAudioSource;
+    audioPlayer.sequence?.clear();
+    audioPlayer.sequence?.addAll(concatenatingAudioSource.sequence);
+    await init(concatenatingAudioSource);
   }
 
   void play() {
@@ -99,22 +98,20 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
     audioPlayer.stop();
   }
 
-  void seekToDuration(Duration duration) {
-    audioPlayer.seek(duration);
+  void loopModeOne(bool enable) {
+    if (enable) {
+      audioPlayer.setLoopMode(LoopMode.one);
+    } else {
+      audioPlayer.setLoopMode(LoopMode.off);
+    }
   }
 
-  void seekToIndext(int index) async {
-    AudioMetaData newSongTag = audioPlayer.sequence![index].tag;
-    emit(PlayerCubitState(
-      newSongTag.image,
-      newSongTag.title,
-      newSongTag.fileName,
-      newSongTag.songDuration,
-      Duration.zero,
-      PlayButtonState.playing,
-    ));
-    await audioPlayer.seek(Duration.zero, index: index);
-    await audioPlayer.play();
+  void shuffleMode(bool enable) {
+    if (enable) {
+      audioPlayer.setShuffleModeEnabled(true);
+    } else {
+      audioPlayer.setShuffleModeEnabled(false);
+    }
   }
 
   void seekToNext() {
@@ -133,6 +130,26 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
     }
   }
 
+  void seekToDuration(Duration duration) {
+    audioPlayer.seek(duration);
+  }
+
+  void seekToIndext(int index) async {
+    AudioMetaData newSongTag = audioPlayer.sequence![index].tag;
+    emit(PlayerCubitState(
+      newSongTag.image,
+      newSongTag.title,
+      newSongTag.fileName,
+      newSongTag.songDuration,
+      Duration.zero,
+      state.isPlaying,
+      state.isLoopModeOne,
+      state.isShuffleMode,
+    ));
+    await audioPlayer.seek(Duration.zero, index: index);
+    await audioPlayer.play();
+  }
+
   void resetState() {
     emit(PlayerCubitState.initState);
   }
@@ -143,26 +160,16 @@ class PlayerCubit extends Cubit<PlayerCubitState> {
 }
 
 class PlayerCubitState {
-  static PlayerCubitState initState = PlayerCubitState(
-    null,
-    "Title",
-    "SubTitle",
-    Duration.zero,
-    Duration.zero,
-    PlayButtonState.notplaying,
-  );
+  static PlayerCubitState initState = PlayerCubitState(null, "Title", "SubTitle", Duration.zero, Duration.zero, false, false, false);
 
   Uint8List? image;
   String? title;
   String subTitle;
   Duration songDuration;
   Duration currentDuration;
-  PlayButtonState playButtonState;
+  bool isPlaying;
+  bool isLoopModeOne;
+  bool isShuffleMode;
 
-  PlayerCubitState(this.image, this.title, this.subTitle, this.songDuration, this.currentDuration, this.playButtonState);
-}
-
-enum PlayButtonState {
-  playing,
-  notplaying,
+  PlayerCubitState(this.image, this.title, this.subTitle, this.songDuration, this.currentDuration, this.isPlaying, this.isLoopModeOne, this.isShuffleMode);
 }

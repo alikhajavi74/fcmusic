@@ -30,10 +30,10 @@ class _PlayerPageState extends State<PlayerPage> {
         child: BlocBuilder<PlayerCubit, PlayerCubitState>(
             bloc: _playerCubit,
             buildWhen: (pState, state) {
-              if (pState.currentDuration != state.currentDuration || pState.songDuration != state.songDuration) {
-                return false;
+              if (pState.title != state.title || pState.subTitle != state.subTitle || pState.image != state.image) {
+                return true;
               }
-              return true;
+              return false;
             },
             builder: (context, state) {
               return Stack(
@@ -83,34 +83,45 @@ class _PlayerPageState extends State<PlayerPage> {
                       Flexible(
                         flex: 6,
                         fit: FlexFit.loose,
-                        child: Neumorphic(
-                          child: state.image != null
-                              ? ColorFiltered(
-                                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
-                                  child: Image.memory(
-                                    state.image!,
-                                    width: 300,
-                                    height: 300,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : ColorFiltered(
-                                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
-                                  child: Image.asset(
-                                    "image/default_song_image.jpg",
-                                    width: 300,
-                                    height: 300,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                          style: NeumorphicStyle(
-                            border: NeumorphicBorder(color: state.playButtonState == PlayButtonState.playing ? Colors.deepOrangeAccent : Colors.blue, width: 2.0, isEnabled: true),
-                            depth: state.playButtonState == PlayButtonState.playing ? 9 : 5,
-                            shadowLightColor: state.playButtonState == PlayButtonState.playing ? Colors.orange : Colors.blue,
-                            shadowDarkColor: state.playButtonState == PlayButtonState.playing ? Colors.deepOrange : Colors.blue,
-                            boxShape: const NeumorphicBoxShape.circle(),
-                            shape: NeumorphicShape.convex,
-                          ),
+                        child: BlocBuilder<PlayerCubit, PlayerCubitState>(
+                          bloc: _playerCubit,
+                          buildWhen: (pState, state) {
+                            if (pState.image != state.image || pState.isPlaying != state.isPlaying) {
+                              return true;
+                            }
+                            return false;
+                          },
+                          builder: (context, state) {
+                            return Neumorphic(
+                              child: state.image != null
+                                  ? ColorFiltered(
+                                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
+                                      child: Image.memory(
+                                        state.image!,
+                                        width: 300,
+                                        height: 300,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : ColorFiltered(
+                                      colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.45), BlendMode.dstATop),
+                                      child: Image.asset(
+                                        "image/default_song_image.jpg",
+                                        width: 300,
+                                        height: 300,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                              style: NeumorphicStyle(
+                                border: NeumorphicBorder(color: state.isPlaying ? Colors.deepOrangeAccent : Colors.blue, width: 2.0, isEnabled: true),
+                                depth: state.isPlaying ? 9 : 5,
+                                shadowLightColor: state.isPlaying ? Colors.orange : Colors.blue,
+                                shadowDarkColor: state.isPlaying ? Colors.deepOrange : Colors.blue,
+                                boxShape: const NeumorphicBoxShape.circle(),
+                                shape: NeumorphicShape.convex,
+                              ),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(height: 30.0),
@@ -156,9 +167,9 @@ class _PlayerPageState extends State<PlayerPage> {
                             ),
                             const SizedBox(width: 5.0),
                             IconButton(
-                              icon: const Icon(Icons.favorite, color: Colors.white54, size: 35.0),
+                              icon: const Icon(Icons.favorite, color: Colors.white54, size: 27.0),
                               padding: const EdgeInsets.all(0),
-                              constraints: const BoxConstraints.tightFor(width: 35.0, height: 35.0),
+                              constraints: const BoxConstraints.tightFor(width: 27.0, height: 27.0),
                               onPressed: () {
                                 // TODO
                               },
@@ -166,18 +177,18 @@ class _PlayerPageState extends State<PlayerPage> {
                           ],
                         ),
                       ),
-                      BlocBuilder<PlayerCubit, PlayerCubitState>(
-                        bloc: _playerCubit,
-                        buildWhen: (pState, state) {
-                          if (pState.currentDuration != state.currentDuration || pState.songDuration != state.songDuration) {
-                            return true;
-                          }
-                          return false;
-                        },
-                        builder: (context, state) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
-                            child: Column(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
+                        child: BlocBuilder<PlayerCubit, PlayerCubitState>(
+                          bloc: _playerCubit,
+                          buildWhen: (pState, state) {
+                            if (pState.currentDuration != state.currentDuration || pState.songDuration != state.songDuration) {
+                              return true;
+                            }
+                            return false;
+                          },
+                          builder: (context, state) {
+                            return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 SliderTheme(
@@ -207,122 +218,139 @@ class _PlayerPageState extends State<PlayerPage> {
                                   ],
                                 ),
                               ],
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                       const SizedBox(height: 20.0),
                       Flexible(
                         flex: 3,
                         fit: FlexFit.loose,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.repeat_one, color: Colors.deepOrange),
-                              color: Colors.white54,
-                              onPressed: () {
-                                // TODO
-                              },
-                            ),
-                            const SizedBox(width: 10),
-                            Container(
-                              height: 60,
-                              width: 60,
-                              margin: const EdgeInsets.all(2.0),
-                              child: NeumorphicButton(
-                                child: const Icon(
-                                  Icons.skip_previous,
-                                  color: Colors.white54,
-                                  size: 20,
+                        child: BlocBuilder<PlayerCubit, PlayerCubitState>(
+                          bloc: _playerCubit,
+                          buildWhen: (pState, state) {
+                            if (pState.isPlaying != state.isPlaying || pState.isShuffleMode != state.isShuffleMode || pState.isLoopModeOne != state.isLoopModeOne) {
+                              return true;
+                            }
+                            return false;
+                          },
+                          builder: (context, state) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.repeat_one, color: state.isLoopModeOne ? Colors.deepOrange : Colors.white24),
+                                  onPressed: () {
+                                    if (state.isLoopModeOne) {
+                                      _playerCubit.loopModeOne(false);
+                                    } else {
+                                      _playerCubit.loopModeOne(true);
+                                    }
+                                  },
                                 ),
-                                style: const NeumorphicStyle(
-                                  boxShape: NeumorphicBoxShape.circle(),
-                                  shape: NeumorphicShape.convex,
-                                  color: Colors.black54,
-                                ),
-                                onPressed: () {
-                                  _playerCubit.seekToPrevius();
-                                },
-                              ),
-                            ),
-                            Container(
-                              height: 100,
-                              width: 100,
-                              margin: const EdgeInsets.all(5.0),
-                              child: BlocBuilder<PlayerCubit, PlayerCubitState>(
-                                bloc: _playerCubit,
-                                buildWhen: (pState, state) {
-                                  if (pState.playButtonState != state.playButtonState) {
-                                    return true;
-                                  }
-                                  return false;
-                                },
-                                builder: (context, state) {
-                                  if (state.playButtonState == PlayButtonState.playing) {
-                                    return NeumorphicButton(
-                                      child: const Icon(
-                                        Icons.pause,
-                                        color: Colors.white54,
-                                        size: 30,
-                                      ),
-                                      style: NeumorphicStyle(
-                                        boxShape: const NeumorphicBoxShape.circle(),
-                                        shape: NeumorphicShape.concave,
-                                        color: Colors.deepOrange.shade800,
-                                      ),
-                                      onPressed: () async {
-                                        _playerCubit.pause();
-                                      },
-                                    );
-                                  }
-                                  return NeumorphicButton(
+                                const SizedBox(width: 10),
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  margin: const EdgeInsets.all(2.0),
+                                  child: NeumorphicButton(
                                     child: const Icon(
-                                      Icons.play_arrow,
+                                      Icons.skip_previous,
                                       color: Colors.white54,
-                                      size: 30,
+                                      size: 20,
                                     ),
                                     style: const NeumorphicStyle(
                                       boxShape: NeumorphicBoxShape.circle(),
                                       shape: NeumorphicShape.convex,
                                       color: Colors.black54,
                                     ),
-                                    onPressed: () async {
-                                      _playerCubit.play();
+                                    onPressed: () {
+                                      _playerCubit.seekToPrevius();
                                     },
-                                  );
-                                },
-                              ),
-                            ),
-                            Container(
-                              height: 60,
-                              width: 60,
-                              margin: const EdgeInsets.all(2.0),
-                              child: NeumorphicButton(
-                                child: const Icon(
-                                  Icons.skip_next,
-                                  color: Colors.white54,
-                                  size: 20,
+                                  ),
                                 ),
-                                style: const NeumorphicStyle(
-                                  boxShape: NeumorphicBoxShape.circle(),
-                                  shape: NeumorphicShape.convex,
-                                  color: Colors.black54,
+                                Container(
+                                  height: 100,
+                                  width: 100,
+                                  margin: const EdgeInsets.all(5.0),
+                                  child: BlocBuilder<PlayerCubit, PlayerCubitState>(
+                                    bloc: _playerCubit,
+                                    buildWhen: (pState, state) {
+                                      if (pState.isPlaying != state.isPlaying) {
+                                        return true;
+                                      }
+                                      return false;
+                                    },
+                                    builder: (context, state) {
+                                      if (state.isPlaying) {
+                                        return NeumorphicButton(
+                                          child: const Icon(
+                                            Icons.pause,
+                                            color: Colors.white54,
+                                            size: 30,
+                                          ),
+                                          style: NeumorphicStyle(
+                                            boxShape: const NeumorphicBoxShape.circle(),
+                                            shape: NeumorphicShape.concave,
+                                            color: Colors.deepOrange.shade800,
+                                          ),
+                                          onPressed: () async {
+                                            _playerCubit.pause();
+                                          },
+                                        );
+                                      }
+                                      return NeumorphicButton(
+                                        child: const Icon(
+                                          Icons.play_arrow,
+                                          color: Colors.white54,
+                                          size: 30,
+                                        ),
+                                        style: const NeumorphicStyle(
+                                          boxShape: NeumorphicBoxShape.circle(),
+                                          shape: NeumorphicShape.convex,
+                                          color: Colors.black54,
+                                        ),
+                                        onPressed: () async {
+                                          _playerCubit.play();
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
-                                onPressed: () {
-                                  _playerCubit.seekToNext();
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            IconButton(
-                              icon: const Icon(Icons.shuffle, color: Colors.white24),
-                              color: Colors.white54,
-                              onPressed: () {
-                                // TODO
-                              },
-                            ),
-                          ],
+                                Container(
+                                  height: 60,
+                                  width: 60,
+                                  margin: const EdgeInsets.all(2.0),
+                                  child: NeumorphicButton(
+                                    child: const Icon(
+                                      Icons.skip_next,
+                                      color: Colors.white54,
+                                      size: 20,
+                                    ),
+                                    style: const NeumorphicStyle(
+                                      boxShape: NeumorphicBoxShape.circle(),
+                                      shape: NeumorphicShape.convex,
+                                      color: Colors.black54,
+                                    ),
+                                    onPressed: () {
+                                      _playerCubit.seekToNext();
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                IconButton(
+                                  icon: Icon(Icons.shuffle, color: state.isShuffleMode ? Colors.deepOrange : Colors.white24),
+                                  onPressed: () {
+                                    if (state.isShuffleMode) {
+                                      _playerCubit.shuffleMode(false);
+                                    } else {
+                                      _playerCubit.shuffleMode(true);
+                                    }
+                                  },
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       const Spacer(),
