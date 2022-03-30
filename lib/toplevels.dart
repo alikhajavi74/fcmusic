@@ -16,11 +16,12 @@ ConcatenatingAudioSource concatAllSongs(List songs) {
       AudioSource.uri(
         Uri.parse(song["file_path"]),
         tag: AudioMetaData(
+          id: song["id"],
+          title: song["title"] ?? convertSongFileNameToSongName(song["file_name"]),
           filePath: song["file_path"],
           fileName: song["file_name"],
           fileFolder: song["file_folder"],
           image: song["image"],
-          title: song["title"],
           songDuration: Duration(milliseconds: int.parse(song["duration"])),
         ),
       ),
@@ -44,11 +45,12 @@ Map<String, ConcatenatingAudioSource> concatFoldersSongs(List songs) {
       AudioSource.uri(
         Uri.parse(song["file_path"]),
         tag: AudioMetaData(
+          id: song["id"],
+          title: song["title"] ?? convertSongFileNameToSongName(song["file_name"]),
           filePath: song["file_path"],
           fileName: song["file_name"],
           fileFolder: song["file_folder"],
           image: song["image"],
-          title: song["title"],
           songDuration: Duration(milliseconds: int.parse(song["duration"])),
         ),
       ),

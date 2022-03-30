@@ -3,7 +3,6 @@ import 'package:fcmusic/mfw/dependencies/mfw_utils.dart';
 import 'package:fcmusic/player/bloc/player_cubit.dart';
 import 'package:fcmusic/player/models/player_models.dart';
 import 'package:fcmusic/player/pages/player_page.dart';
-import 'package:fcmusic/toplevels.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:just_audio/just_audio.dart';
@@ -154,7 +153,7 @@ class _SongListTileState extends State<SongListTile> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(songTag.title ?? convertSongFileNameToSongName(songTag.fileName), softWrap: false, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, letterSpacing: 2.0, fontSize: 15.0, fontWeight: FontWeight.w600)),
+          Text(songTag.title, softWrap: false, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, letterSpacing: 2.0, fontSize: 15.0, fontWeight: FontWeight.w600)),
           Text(songTag.fileName, softWrap: false, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, letterSpacing: 1.0, fontSize: 13.0, fontWeight: FontWeight.w400)),
           Text("${convertDurationToMinute1(songTag.songDuration)} | mp3", softWrap: false, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white38, letterSpacing: 1.0, fontSize: 10.0, fontWeight: FontWeight.w400)),
         ],

@@ -1,8 +1,11 @@
 package ir.faracodeteam.fcmusic;
 
+import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.os.Environment;
+
+import com.ryanheise.audioservice.AudioServicePlugin;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,9 +18,15 @@ import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
+
 public class MainActivity extends FlutterActivity {
 
   public static final String METHOD_CHANNEL = "ir.faracodeteam.fcmusic/songs";
+
+  @Override
+  public FlutterEngine provideFlutterEngine(Context context) {
+    return AudioServicePlugin.getFlutterEngine(context);
+  }
 
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -45,8 +54,10 @@ public class MainActivity extends FlutterActivity {
   private List<HashMap<Object, Object>> getSongs() {
     ScanSongs scanSongs = new ScanSongs(getRootPath());
     List<HashMap<Object, Object>> list = new ArrayList<>();
-    for (File songMP3File : scanSongs.songsMP3Files) {
+    for (int i = 0; i < scanSongs.songsMP3Files.size(); i++) {
+      File songMP3File = scanSongs.songsMP3Files.get(i);
       HashMap<Object, Object> map = new HashMap<>();
+      map.put("id", String.valueOf(i));
       map.put("file_path", songMP3File.getAbsolutePath());
       map.put("file_name", songMP3File.getName());
       map.put("file_folder", songMP3File.getParentFile().getName());
